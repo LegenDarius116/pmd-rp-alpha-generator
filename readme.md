@@ -42,3 +42,8 @@ Speed | 60 | 60 + 0 = 60
 2. Enter the name of a Pokémon's species. If it is invalid, the application will show an error after clicking Submit.
 3. Enter the level. If it is not within the range 1-100, the application will show an error after clicking Submit.
 4. Click submit, and it should show you your generated enemy with randomized stats!
+
+## Alternate Forms
+To generate a Pokémon in its Alolan form (if applicable), type "-Alola" after the species name, e.g. "sandshrew-alola".
+
+To see a full list of forms, see the [Pokeapi Documentation](https://pokeapi.co/docs/v2.html#pokemon).
