@@ -1,1 +1,1 @@
-web: gunicorn cb_detector_web.wsgi --log-file -
+web: gunicorn alpha_enemy_generator.wsgi --log-file -
