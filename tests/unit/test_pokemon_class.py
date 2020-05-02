@@ -53,4 +53,5 @@ class TestPokemonClass(TestCase):
         for lvl in levels:
             p = Pokemon('rayquaza', lvl)
             boosts = p.generate_boosts()
-            self.assertEqual(len(boosts), lvl-1)
+            num_boosts = sum([b for b in boosts.values()])
+            self.assertEqual(num_boosts, lvl-1)
