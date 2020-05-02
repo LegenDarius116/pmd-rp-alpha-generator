@@ -20,12 +20,37 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-8">
-                <h1>Hello, World!</h1>
-                <form method="post" novalidate>
-                    {% csrf_token %}
-                    <label>Enter a Pokémon and a Level to Generate an Enemy</label>
-                </form>
-
+                <div class="jumbotron">
+                    <h1>PMD Alpha Enemy Generator</h1>
+                    <h3>By LegenDarius116</h3>
+                    <hr>
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <label>Enter a Pokémon and a Level to Generate an Enemy</label>
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                    {% if success != None %}
+                        <hr>
+                        {% if not success %}
+                            {% if error == 'bad-level' %}
+                                <div class="alert alert-danger" role="alert">Invalid level supplied!</div>
+                            {% else %}
+                                <div class="alert alert-danger" role="alert">Invalid species supplied!</div>
+                            {% endif %}
+                        {% else %}
+                            <!-- Data object exists -->
+                            <p>Species: {{ data.species }}</p>
+                            <p>Level: {{ data.level }}</p>
+                            <p>HP: {{ data.hp }}</p>
+                            <p>Attack: {{ data.attack }}</p>
+                            <p>Defense: {{ data.defense }}</p>
+                            <p>Special Attack: {{ data.special_attack }}</p>
+                            <p>Special Defense: {{ data.special_defense }}</p>
+                            <p>Speed: {{ data.speed }}</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

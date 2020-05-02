@@ -4,8 +4,9 @@ import requests
 from collections import defaultdict
 from json.decoder import JSONDecodeError
 
-from alpha_enemy_generator.settings import POKEMON_API_URL
+from .exceptions import InvalidSpeciesException, InvalidLevelException
 
+from alpha_enemy_generator.settings import POKEMON_API_URL
 
 
 BOOSTS_PER_LEVEL = {
@@ -27,6 +28,9 @@ class Pokemon:
 
     """
     def __init__(self, species: str, level: int):
+        if not (1 <= level <= 100):
+            raise InvalidLevelException("Level must be in the range 1-100.")
+
         self.species = species.lower()
         self.level = level
         self._boosted = False
@@ -43,11 +47,10 @@ class Pokemon:
         }
 
         base_stats = self._retrieve_stats()
-        if base_stats is not None:
-            self.stats = base_stats
+        self.stats = base_stats
 
     def generate_boosts(self):
-        """Generates stat boosts by picking random stats level-1 times
+        """Generates stat boosts by picking random stats 3 times for every level after level 1.
 
         :return:    Dictionary of strings mapped to integers. String is the stat to be boosted,
                     integer is number of boosts for that stat.
@@ -62,35 +65,54 @@ class Pokemon:
             'speed': 5,
         }
 
-        For a pokemon of level (3+1+1+2+3+5)+1 = 16
+        For a pokemon of level (3+1+1+2+3+5)/3 + 1 = 6
         """
         boosts = defaultdict(int)
         stats = [k for k in BOOSTS_PER_LEVEL.keys()]
         for _ in range(self.level-1):
-            boosts[random.choice(stats)] += 1
+            for _ in range(3):
+                boosts[random.choice(stats)] += 1
 
         return boosts
 
     def apply_boosts(self, boosts):
-        """Applies boosts found in list"""
+        """Applies boosts found in dictionary based on each stat's respective power.
+
+        Ex Input:
+        {
+            'hp': 3,
+            'attack': 2,
+            'defense': 0,
+            'special-attack': 0,
+            'special-defense': 1,
+            'speed': 0,
+        }
+
+        Max HP gained will be 3*3 = 9 HP, as each HP boost gives +3 max HP.
+        Attack gained will be 2*4 = 8 Atk, as each Attack Boost gives +4 attack
+        SpDef gained will be 1*6 = 6, as each SpDef boost gives +6 SpDef
+        """
         if not self._boosted:
-            for boost_stat in boosts:
-                self.stats[boost_stat] += BOOSTS_PER_LEVEL[boost_stat]
+            # apply boosts
+            for stat, num_boosts in boosts.items():
+                self.stats[stat] += BOOSTS_PER_LEVEL[stat] * num_boosts
+
+            # set boosted state. Now the object cannot be boosted again
+            self._boosted = True
         else:
-            print("Warning! Pokemon already boosted.")
+            raise UserWarning("Boosts have already been applied")
 
     def _retrieve_stats(self):
         """Attempts to retrieve base stats based off of species name using API"""
         try:
             rjson = requests.get(POKEMON_API_URL + '/pokemon/' + self.species).json()
         except JSONDecodeError:
-            print("Invalid species")
-            return
+            raise InvalidSpeciesException("Invalid species! Please enter a valid species name or dex number.")
 
-        base_stats = {}
+        base_stats = defaultdict(int)
 
         for stat in rjson['stats']:
             stat_name = stat['stat']['name']
             base_stats[stat_name] = stat['base_stat'] // 2 if stat_name == 'hp' else stat['base_stat']
 
-        return base_stats
+        return dict(base_stats)
