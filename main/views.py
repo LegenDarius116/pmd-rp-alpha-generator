@@ -32,12 +32,16 @@ def index(request):
             boosts = pokemon.generate_boosts()
             pokemon.apply_boosts(boosts)
 
-            # put data in context object and then show
+            # data has species, level, stats, and moveset
             data = {
                 'species': species,
                 'level': level,
+                'moves': pokemon.moveset,
+                'image': pokemon.image,
             }
             data.update(pokemon.stats)
+
+            # rename special stats to have underscore in place of dash
             data['special_attack'] = data.pop('special-attack')
             data['special_defense'] = data.pop('special-defense')
 

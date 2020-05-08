@@ -36,18 +36,7 @@ class Pokemon:
         self._boosted = False
 
         # get base stats based on Pokémon species
-        # if species is invalid, stats remain zero
-        self.stats = {
-            'hp': 0,
-            'attack': 0,
-            'defense': 0,
-            'special-attack': 0,
-            'special-defense': 0,
-            'speed': 0,
-        }
-
-        base_stats = self._retrieve_stats()
-        self.stats = base_stats
+        self.stats, self.moveset, self.image = self._retrieve_stats()
 
     def generate_boosts(self):
         """Generates stat boosts by picking random stats 3 times for every level after level 1.
@@ -103,16 +92,26 @@ class Pokemon:
             raise UserWarning("Boosts have already been applied")
 
     def _retrieve_stats(self):
-        """Attempts to retrieve base stats based off of species name using API"""
+        """Attempts to retrieve base stats based off of species name using API. Also retrieves four moves at random.
+
+        returns (dict, list, str): dict represents stats, list represents the moveset, str represents an image url
+        """
         try:
             rjson = requests.get(POKEMON_API_URL + '/pokemon/' + self.species).json()
         except JSONDecodeError:
             raise InvalidSpeciesException("Invalid species! Please enter a valid species name or dex number.")
 
         base_stats = defaultdict(int)
+        moveset = [
+            r['move']['name'] for r in
+            random.sample(
+                rjson['moves'],
+                min(4, len(rjson['moves']))
+            )
+        ]
 
         for stat in rjson['stats']:
             stat_name = stat['stat']['name']
             base_stats[stat_name] = stat['base_stat'] // 2 if stat_name == 'hp' else stat['base_stat']
 
-        return dict(base_stats)
+        return dict(base_stats), moveset, rjson['sprites']['front_default']

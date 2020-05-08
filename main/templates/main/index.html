@@ -40,14 +40,46 @@
                             {% endif %}
                         {% else %}
                             <!-- Data object exists -->
-                            <p>Species: {{ data.species }}</p>
-                            <p>Level: {{ data.level }}</p>
-                            <p>HP: {{ data.hp }}</p>
-                            <p>Attack: {{ data.attack }}</p>
-                            <p>Defense: {{ data.defense }}</p>
-                            <p>Special Attack: {{ data.special_attack }}</p>
-                            <p>Special Defense: {{ data.special_defense }}</p>
-                            <p>Speed: {{ data.speed }}</p>
+                            <table>
+                                <tr>
+                                    <th rowspan="9"><img src="{{ data.image }}"></th>
+                                    <td>Species</td>
+                                    <td>{{ data.species }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Level</td>
+                                    <td>{{ data.level }}</td>
+                                </tr>
+                                <tr>
+                                    <td>HP</td>
+                                    <td>{{ data.hp }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Attack</td>
+                                    <td>{{ data.attack }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Defense</td>
+                                    <td>{{ data.defense }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Special Attack</td>
+                                    <td>{{ data.special_attack }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Special Defense</td>
+                                    <td>{{ data.special_defense }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Speed</td>
+                                    <td>{{ data.speed }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Moves</td>
+                                    <td>{{ data.moves }}</td>
+                                </tr>
+                            </table>
+
                         {% endif %}
                     {% endif %}
                 </div>
